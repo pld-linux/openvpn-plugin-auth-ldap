@@ -1,10 +1,8 @@
-# TODO
-# [13:32:47] <@pluto_> glen: what for you use a strlcpy? use libsafe.spec and `gcc -Dstrlcpy=strcpy ...` :)
 Summary:	OpenVPN Auth-LDAP Plugin
 Summary(pl):	Wtyczka Auth-LDAP dla OpenVPN
 Name:		openvpn-plugin-auth-ldap
 Version:	1.0.1
-Release:	0.3
+Release:	0.4
 License:	BSD
 Group:		Applications
 Source0:	http://www.opendarwin.org/~landonf/software/openvpn-auth-ldap/auth-ldap-1.0.1.tar.gz
