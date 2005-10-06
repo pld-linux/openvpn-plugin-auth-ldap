@@ -1,6 +1,7 @@
 # TODO
 # [13:32:47] <@pluto_> glen: what for you use a strlcpy? use libsafe.spec and `gcc -Dstrlcpy=strcpy ...` :)
 Summary:	OpenVPN Auth-LDAP Plugin
+Summary(pl):	Wtyczka Auth-LDAP dla OpenVPN
 Name:		openvpn-plugin-auth-ldap
 Version:	1.0.1
 Release:	0.3
@@ -22,6 +23,10 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 The openvpn-auth-ldap plugin implements username/password
 authentication via LDAP.
+
+%description -l pl
+Wtyczka openvpn-auth-ldap implementuje uwierzytelnianie nazw±
+u¿ytkownika i has³em poprzez LDAP.
 
 %prep
 %setup -q -n auth-ldap-%{version}
