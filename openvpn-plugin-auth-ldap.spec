@@ -10,6 +10,7 @@ Source0:	http://www.opendarwin.org/~landonf/software/openvpn-auth-ldap/auth-ldap
 Patch0:		%{name}-make.patch
 URL:		http://www.opendarwin.org/~landonf/software/openvpn-auth-ldap/
 BuildRequires:	autoconf
+BuildRequires:	automake
 BuildRequires:	gcc-objc
 BuildRequires:	openldap-devel
 BuildRequires:	openvpn-devel
@@ -35,14 +36,15 @@ u¿ytkownika i has³em poprzez LDAP.
 %{__autoconf}
 %{__autoheader}
 %configure \
-  --with-openldap=%{_prefix} \
-  --with-openvpn=%{_prefix}
+	--with-openldap=%{_prefix} \
+	--with-openvpn=%{_prefix}
 
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_libdir}}
+
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 install auth-ldap.conf $RPM_BUILD_ROOT%{_sysconfdir}
