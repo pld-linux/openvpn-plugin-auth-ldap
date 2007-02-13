@@ -1,5 +1,5 @@
 Summary:	OpenVPN Auth-LDAP Plugin
-Summary(pl.UTF-8):   Wtyczka Auth-LDAP dla OpenVPN
+Summary(pl.UTF-8):	Wtyczka Auth-LDAP dla OpenVPN
 Name:		openvpn-plugin-auth-ldap
 Version:	1.0.3
 Release:	0.1
