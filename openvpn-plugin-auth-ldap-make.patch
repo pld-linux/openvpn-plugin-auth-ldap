@@ -1,11 +1,25 @@
---- auth-ldap-1.0.3/src/Makefile.in~	2006-01-21 01:06:23.000000000 +0200
-+++ auth-ldap-1.0.3/src/Makefile.in	2006-01-21 01:51:06.000000000 +0200
-@@ -24,7 +24,7 @@
- 	./test $(top_srcdir)/auth-ldap.conf
+--- auth-ldap-2.0.3/tests/Makefile.in~	2006-08-01 06:51:52.000000000 +0300
++++ auth-ldap-2.0.3/tests/Makefile.in	2008-12-02 14:35:09.606338237 +0200
+@@ -26,7 +26,7 @@
+ CFLAGS+=	@CHECK_CFLAGS@ -DTEST_DATA=\"${srcdir}/data\"
+ OBJCFLAGS+=	@CHECK_CFLAGS@ -DTEST_DATA=\"${srcdir}/data\"
+ LIBS+=		-lauth-ldap-testing $(OBJC_LIBS) $(LDAP_LIBS) @CHECK_LIBS@
+-LDFLAGS+=	-L${top_builddir}src $(LIBS)
++LDFLAGS+=	-L${top_builddir}/src $(LIBS)
  
- install:: openvpn-auth-ldap.so
--	$(INSTALL) -m 755 openvpn-auth-ldap.so $(DESTDIR)$(prefix)/lib/
-+	$(INSTALL) -m 755 openvpn-auth-ldap.so $(DESTDIR)$(libdir)
+ # Recompile the tests every time
+ all: tests
+--- auth-ldap-2.0.3/check.m4~	2006-04-27 05:54:34.000000000 +0300
++++ auth-ldap-2.0.3/check.m4	2008-12-02 14:38:22.692976133 +0200
+@@ -20,8 +20,9 @@
+ #       Result is cached.
+ #
+ #	Defines and substitutes the following vars:
+-#               LIBCHECK_CFLAGS
+-#               LIBCHECK_LIBS
++#               CHECK_CFLAGS
++#               CHECK_LIBS
++#               CHECK_DIRS
+ #
+ #------------------------------------------------------------------------
  
- clean::
- 	rm -f $(TEST_OBJS) $(MODULE_OBJS) openvpn-auth-ldap.so test

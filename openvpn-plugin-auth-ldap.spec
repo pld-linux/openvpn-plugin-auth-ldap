@@ -1,19 +1,24 @@
+# Conditional build:
+%bcond_with	tests		# build without tests
+#
 Summary:	OpenVPN Auth-LDAP Plugin
 Summary(pl.UTF-8):	Wtyczka Auth-LDAP dla OpenVPN
 Name:		openvpn-plugin-auth-ldap
-Version:	1.0.3
-Release:	0.1
+Version:	2.0.3
+Release:	1
 License:	BSD
 Group:		Applications
-Source0:	http://www.opendarwin.org/~landonf/software/openvpn-auth-ldap/auth-ldap-%{version}.tar.gz
-# Source0-md5:	955f8f06962acb08e4da62f77fc41131
-Patch0:		%{name}-make.patch
-URL:		http://www.opendarwin.org/~landonf/software/openvpn-auth-ldap/
+Source0:	http://openvpn-auth-ldap.googlecode.com/files/auth-ldap-%{version}.tar.gz
+# Source0-md5:	03dedc57efc8d4fc2ffe2c014121299d
+URL:		http://code.google.com/p/openvpn-auth-ldap/
+Patch0:	%{name}-make.patch
 BuildRequires:	autoconf
 BuildRequires:	automake
+%{?with_tests:BuildRequires:	check}
 BuildRequires:	gcc-objc
-BuildRequires:	openldap-devel >= 2.4.6
+BuildRequires:	openldap-devel
 BuildRequires:	openvpn-devel
+BuildRequires:	re2c
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_libdir		%{_prefix}/%{_lib}/openvpn/plugins
@@ -35,9 +40,11 @@ użytkownika i hasłem poprzez LDAP.
 %{__aclocal}
 %{__autoconf}
 %{__autoheader}
+cp -f /usr/share/automake/config.sub .
 %configure \
-	--with-openldap=%{_prefix} \
-	--with-openvpn=%{_prefix}
+	--with-check=%{!?with_check:/proc}%{?with_check:/usr} \
+	--with-openldap=/usr \
+	--with-openvpn=/usr
 
 %{__make}
 
@@ -47,7 +54,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_libdir}}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-install auth-ldap.conf $RPM_BUILD_ROOT%{_sysconfdir}
+cp -a auth-ldap.conf $RPM_BUILD_ROOT%{_sysconfdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
