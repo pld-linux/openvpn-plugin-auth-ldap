@@ -1,5 +1,6 @@
+#
 # Conditional build:
-%bcond_with	tests		# build without tests
+%bcond_with	tests		# check-based tests
 #
 Summary:	OpenVPN Auth-LDAP Plugin
 Summary(pl.UTF-8):	Wtyczka Auth-LDAP dla OpenVPN
@@ -10,8 +11,8 @@ License:	BSD
 Group:		Applications
 Source0:	http://openvpn-auth-ldap.googlecode.com/files/auth-ldap-%{version}.tar.gz
 # Source0-md5:	03dedc57efc8d4fc2ffe2c014121299d
+Patch0:		%{name}-make.patch
 URL:		http://code.google.com/p/openvpn-auth-ldap/
-Patch0:	%{name}-make.patch
 BuildRequires:	autoconf
 BuildRequires:	automake
 %{?with_tests:BuildRequires:	check}
@@ -42,7 +43,7 @@ użytkownika i hasłem poprzez LDAP.
 %{__autoheader}
 cp -f /usr/share/automake/config.sub .
 %configure \
-	--with-check=%{!?with_check:/proc}%{?with_check:/usr} \
+	--with-check=%{!?with_tests:/proc}%{?with_tests:/usr} \
 	--with-openldap=/usr \
 	--with-openvpn=/usr
 
