@@ -1,7 +1,7 @@
 #
 # Conditional build:
 %bcond_with	tests		# check-based tests
-#
+
 Summary:	OpenVPN Auth-LDAP Plugin
 Summary(pl.UTF-8):	Wtyczka Auth-LDAP dla OpenVPN
 Name:		openvpn-plugin-auth-ldap
@@ -63,5 +63,5 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc LICENSE README
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/*
-%attr(755,root,root) %{_libdir}/*
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/auth-ldap.conf
+%attr(755,root,root) %{_libdir}/openvpn-auth-ldap.so
