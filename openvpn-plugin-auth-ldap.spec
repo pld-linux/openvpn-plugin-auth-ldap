@@ -37,6 +37,8 @@ użytkownika i hasłem poprzez LDAP.
 %setup -q -n auth-ldap-%{version}
 %patch0 -p1
 
+> objc.m4
+
 %build
 %{__aclocal}
 %{__autoconf}
