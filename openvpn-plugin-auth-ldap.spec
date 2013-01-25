@@ -1,3 +1,11 @@
+# TODO
+# - compiled with gcc 4.7 (libobjc.so.4) it crashes
+#   Jan 23 13:47:12 pontus openvpn[32621]: OpenVPN 2.2.1 x86_64-pld-linux [SSL] [LZO2] [EPOLL] [PKCS11] [eurephia] built on Jul 7 2011
+#   Jan 23 13:47:12 pontus kernel: [38178686.496394] openvpn[32621]: segfault at 0 ip 00007ff3b02c4243 sp 00007fffe923bd20 error 4 in libobjc.so.4.0.0[7ff3b02b6000+16000]
+#   Jan 23 13:47:12 pontus openvpn[32621]: NOTE: the current --script-security setting may allow this configuration to call user-defined scripts
+#   Jan 23 13:47:12 pontus openvpn: /usr/sbin/openvpn startup failed
+#   similarily to http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=641811
+#   if built with gcc 4.6 (libobjc.so.3) it does not crash!
 #
 # Conditional build:
 %bcond_with	tests		# check-based tests
@@ -17,7 +25,7 @@ URL:		http://code.google.com/p/openvpn-auth-ldap/
 BuildRequires:	autoconf
 BuildRequires:	automake
 %{?with_tests:BuildRequires:	check}
-BuildRequires:	gcc-objc
+BuildRequires:	gcc-objc < 6:4.7
 BuildRequires:	openldap-devel
 BuildRequires:	openvpn-devel
 BuildRequires:	re2c
