@@ -38,11 +38,11 @@ użytkownika i hasłem poprzez LDAP.
 #%%patch0 -p1
 #%%patch1 -p1
 
-> objc.m4
+#:> objc.m4
 
 %build
-%{__aclocal}
-#%%{__autoconf}
+#%%{__aclocal}
+%{__autoconf}
 %{__autoheader}
 cp -f /usr/share/automake/config.sub .
 %configure \
