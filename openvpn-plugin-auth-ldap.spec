@@ -46,6 +46,7 @@ użytkownika i hasłem poprzez LDAP.
 %{__autoheader}
 cp -f /usr/share/automake/config.sub .
 %configure \
+	OBJCFLAGS="-std=gnu11" \
 	--with-objc-runtime=GNU \
 	--with-check=%{!?with_tests:/proc}%{?with_tests:/usr} \
 	--with-openldap=/usr \
