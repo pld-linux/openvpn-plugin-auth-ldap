@@ -19,7 +19,6 @@ BuildRequires:	automake
 BuildRequires:	gcc-objc
 BuildRequires:	openldap-devel
 BuildRequires:	openvpn-devel
-BuildRequires:	pkgconfig
 BuildRequires:	re2c
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -43,7 +42,7 @@ użytkownika i hasłem poprzez LDAP.
 
 %build
 %{__aclocal}
-%{__autoconf}
+#%%{__autoconf}
 %{__autoheader}
 cp -f /usr/share/automake/config.sub .
 %configure \
