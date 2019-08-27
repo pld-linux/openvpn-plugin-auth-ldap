@@ -66,5 +66,5 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc LICENSE README.md
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/auth-ldap.conf
+%config(noreplace) %verify(not md5 mtime size) %attr(640,root,root) %{_sysconfdir}/auth-ldap.conf
 %attr(755,root,root) %{_libdir}/openvpn-auth-ldap.so
