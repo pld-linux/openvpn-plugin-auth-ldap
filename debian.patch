@@ -1,0 +1,198 @@
+Description: move address checks further down to avoid certain failures
+ this tries to avoid certain failures with the LDAP plugin where it
+ doesn't get passed the remoteAddress in certain cases. since we do
+ may not care about this address, we fail only when really necessary.
+Author: Antoine Beaupré <anarcat@debian.org>
+Origin: vendor
+Bug-Debian: https://bugs.debian.org/692936
+Bug: https://github.com/threerings/openvpn-auth-ldap/issues/4
+Forwarded: https://github.com/threerings/openvpn-auth-ldap/pull/75
+Last-Update: 2019-08-05
+Index: openvpn-auth-ldap/src/auth-ldap.m
+===================================================================
+--- openvpn-auth-ldap.orig/src/auth-ldap.m 2019-05-24 14:55:39.951617229 +0000
++++ openvpn-auth-ldap/src/auth-ldap.m     2019-08-05 08:02:46.617247715 +0000
+@@ -523,7 +523,10 @@
+     }
+ 
+     if (tableName)
+-        if (!pf_client_connect_disconnect(ctx, tableName, remoteAddress, connecting))
++        if (!remoteAddress) {
++            [TRLog debug: "No remote address supplied to OpenVPN LDAP Plugin (OPENVPN_PLUGIN_CLIENT_CONNECT)."];
++            return OPENVPN_PLUGIN_FUNC_ERROR;
++        } else if (!pf_client_connect_disconnect(ctx, tableName, remoteAddress, connecting))
+         return OPENVPN_PLUGIN_FUNC_ERROR;
+ #endif /* HAVE_PF */
+ 
+@@ -582,18 +585,10 @@
+             break;
+         /* New connection established */
+         case OPENVPN_PLUGIN_CLIENT_CONNECT:
+-            if (!remoteAddress) {
+-                [TRLog debug: "No remote address supplied to OpenVPN LDAP Plugin (OPENVPN_PLUGIN_CLIENT_CONNECT)."];
+-            } else {
+-                ret = handle_client_connect_disconnect(ctx, ldap, ldapUser, remoteAddress, YES);
+-            }
++            ret = handle_client_connect_disconnect(ctx, ldap, ldapUser, remoteAddress, YES);
+             break;
+         case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
+-            if (!remoteAddress) {
+-                [TRLog debug: "No remote address supplied to OpenVPN LDAP Plugin (OPENVPN_PLUGIN_CLIENT_DISCONNECT)."];
+-            } else {
+-                ret = handle_client_connect_disconnect(ctx, ldap, ldapUser, remoteAddress, NO);
+-            }
++            ret = handle_client_connect_disconnect(ctx, ldap, ldapUser, remoteAddress, NO);
+             break;
+         default:
+             [TRLog debug: "Unhandled plugin type in OpenVPN LDAP Plugin (type=%d)", type];
+Subject: Delete empty CFLAGS from tools/Makefile.in in order to use the ones provided by autoconf
+Author: Aniol Marti <amarti@caliu.cat>
+Forwarded: https://github.com/threerings/openvpn-auth-ldap/pull/73
+Last-Update: 2019-07-12
+Index: openvpn-auth-ldap/tools/Makefile.in
+===================================================================
+--- openvpn-auth-ldap.orig/tools/Makefile.in	2019-07-12 10:20:10.968440023 +0000
++++ openvpn-auth-ldap/tools/Makefile.in	2019-07-12 11:30:34.248614906 +0000
+@@ -11,7 +11,6 @@
+ LEMON_OBJS=	lemon.o
+ 
+ MAKEHEADERS_OBJS=	makeheaders.o
+-CFLAGS=
+ 
+ all:: lemon makeheaders
+ 
+Subject: Load LDFLAGS passed when running configure
+Author: Aniol Marti <amarti@caliu.cat>
+Forwarded: https://github.com/threerings/openvpn-auth-ldap/pull/74
+Last-Update: 2019-07-12
+Index: openvpn-auth-ldap/platform.m4
+===================================================================
+--- openvpn-auth-ldap.orig/platform.m4	2019-07-12 14:05:01.463471616 +0000
++++ openvpn-auth-ldap/platform.m4	2019-07-12 14:05:26.971179834 +0000
+@@ -95,9 +95,9 @@
+ 	    # A sensible default
+ 	    PLUGIN_CFLAGS="-fPIC"
+ 	    PLUGIN_LD="${CC} -shared"
+-	    PLUGIN_LD_FLAGS=""
++	    PLUGIN_LD_FLAGS="${LDFLAGS}"
+ 	    PLUGIN_SUFFIX=".so"
+-	    LDFLAGS="-export-dynamic"
++	    LDFLAGS="-export-dynamic ${LDFLAGS}"
+ 	    ;;
+     esac
+ 
+Description: Fix FTBFS with GCC 14.
+Author: Yavor Doganov <yavor@gnu.org>
+Forwarded: no
+Last-Update: 2024-08-19
+---
+
+--- openvpn-auth-ldap-2.0.4.orig/aclocal.m4
++++ openvpn-auth-ldap-2.0.4/aclocal.m4
+@@ -71,11 +71,12 @@
+ 		# '@:>@' = ']'
+ 		AC_LINK_IFELSE([
+ 				AC_LANG_PROGRAM([
++						#include <stdio.h>
+ 						#include <objc/objc.h>
+ 						#include <objc/Object.h>
+ 					], [
+ 						Object *obj = @<:@Object alloc@:>@;
+-						puts(@<:@obj name@:>@);
++						puts((const char*)@<:@obj name@:>@);
+ 					])
+ 				], [
+ 					# Linked without -pthread
+@@ -92,11 +93,12 @@
+ 			OBJCFLAGS="${OBJCFLAGS} ${PTHREAD_CFLAGS}"
+ 			AC_LINK_IFELSE([
+ 					AC_LANG_PROGRAM([
++							#include <stdio.h>
+ 							#include <objc/objc.h>
+ 							#include <objc/Object.h>
+ 						], [
+ 							Object *obj = @<:@Object alloc@:>@;
+-							puts(@<:@obj name@:>@);
++							puts((const char*)@<:@obj name@:>@);
+ 						])
+ 					], [
+ 						# Linked with -lpthread 
+@@ -134,7 +136,7 @@
+ 						], [
+ 							id class = objc_lookUpClass("Object");
+ 							id obj = @<:@class alloc@:>@;
+-							puts(@<:@obj name@:>@);
++							puts((const char*)@<:@obj name@:>@);
+ 						])
+ 					], [
+ 						od_cv_objc_runtime_apple="yes"
+@@ -156,6 +158,7 @@
+ 			# '@:>@' = ']'
+ 			AC_LINK_IFELSE([
+ 					AC_LANG_PROGRAM([
++							#include <stdio.h>
+ 							#include <objc/objc.h>
+ 							#ifdef __GNU_LIBOBJC__
+ 							#include <objc/runtime.h>
+@@ -163,13 +166,13 @@
+ 							#include <objc/objc-api.h>
+ 							#endif
+ 						], [
+-							#ifdef __GNU_LIBOBJC_
++							#ifdef __GNU_LIBOBJC__
+ 							Class class = objc_lookUpClass("Object");
+-							puts(class_getName(class));_
++							puts(class_getName(class));
+ 							#else
+ 							id class = objc_lookup_class("Object");
+ 							id obj = @<:@class alloc@:>@;
+-							puts(@<:@obj name@:>@);
++							puts((const char*)@<:@obj name@:>@);
+ 							#endif
+ 						])
+ 					], [
+Description: Fix CVE-2024-28820.
+Author: Graham Northup <grissess@nexusg.org>
+Forwarded: yes
+Last-Update: 2024-06-17
+---
+
+--- openvpn-auth-ldap-2.0.4.orig/src/openvpn-cr.c
++++ openvpn-auth-ldap-2.0.4/src/openvpn-cr.c
+@@ -29,7 +29,7 @@ int extract_openvpn_cr(const char *response, openvpn_response *result, char **er
+ 	tokenIndexes[0] = response;
+ 	int tokenCnt = 1;
+ 	const char *p;
+-	for (p = response; *p; ++p) {
++	for (p = response; *p && tokenCnt < 15; ++p) {
+ 		if (*p == ':')
+ 			tokenIndexes[tokenCnt++] = p + 1;
+ 	}
+Description: Fix FTBFS with GCC-15.
+Bug-Debian: https://bugs.debian.org/1097525
+Author: Yavor Doganov <yavor@gnu.org>
+Forwarded: no
+Last-Update: 2025-09-22
+---
+
+--- openvpn-auth-ldap.orig/tools/lemon.c
++++ openvpn-auth-ldap/tools/lemon.c
+@@ -59,12 +59,12 @@
+ static struct action *Action_sort(struct action *);
+ 
+ /********** From the file "build.h" ************************************/
+-void FindRulePrecedences();
+-void FindFirstSets();
+-void FindStates();
+-void FindLinks();
+-void FindFollowSets();
+-void FindActions();
++void FindRulePrecedences(struct lemon *);
++void FindFirstSets(struct lemon *);
++void FindStates(struct lemon *);
++void FindLinks(struct lemon *);
++void FindFollowSets(struct lemon *);
++void FindActions(struct lemon *);
+ 
+ /********* From the file "configlist.h" *********************************/
+ void Configlist_init(void);
